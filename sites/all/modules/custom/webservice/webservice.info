@@ -1,0 +1,3 @@
+name="custom webservice"
+core=7.x
+package=custom

@@ -1,0 +1,31 @@
+<?php
+function webservice_services_resources() {
+return array(
+"create"=>array(
+'actions' => array(
+   "data"=>array(
+   'help' => 'web service',
+   'file'=>array('type'=>'inc','module'=>'webservice','name'=>'resource/datafile'),
+   'callback' => 'datafile',
+   'access callback' => 'api_services_access',
+   'args' => array(
+     array(
+	   'name'=>'id',
+	   'type'=>'int',
+	   'source'=>array('data'=>'id'),
+	   'optional' => FALSE,
+	 ),
+   
+   ),
+   ),
+),
+),
+);	
+	
+	
+	
+}
+
+function api_services_access($op){
+    return TRUE;
+}

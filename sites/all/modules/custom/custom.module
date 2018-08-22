@@ -1,0 +1,108 @@
+<?php
+function custom_menu() {
+  $items = array();
+
+  $items['form'] = array( //this creates a URL that will call this form at "examples/form-example"
+    'title' => 'Example Form', //page title
+    'page callback' => 'drupal_get_form', //this is the function that will be called when the page is accessed.  for a form, use drupal_get_form
+    'page arguments' => array('form_example_form'), //put the name of the form here
+    'access callback' => TRUE
+  );
+
+  return $items;
+}
+function _ajax_example_get_first_dropdown_options() {
+
+  // drupal_map_assoc() just makes an array('String' => 'String'...).
+  return drupal_map_assoc(array(
+    t('String'),
+    t('Woodwind'),
+    t('Brass'),
+    t('Percussion'),
+  ));
+}
+function form_example_form($form, &$form_state) {
+  $options_first = _ajax_example_get_first_dropdown_options();
+
+  $selected = isset($form_state['values']['dropdown_first']) ? $form_state['values']['dropdown_first'] : key($options_first);
+  $form['dropdown_first'] = array(
+    '#type' => 'select',
+    '#title' => 'Instrument Type',
+    '#options' => $options_first,
+    '#default_value' => $selected,
+   
+    '#ajax' => array(
+      'callback' => 'ajax_example_dependent_dropdown_callback',
+      'wrapper' => array('dropdown-second-replace','dropdown-second-replace1'),
+    ),
+  );
+  $form['dropdown_second'] = array(
+    '#type' => 'select',
+    '#title' => $options_first[$selected] . ' ' . t('Ins'),
+    '#prefix' => '<div id="dropdown-second-replace1">',
+    '#suffix' => '</div>',
+    '#options' => _ajax_example_get_second_dropdown_options($selected),
+    '#default_value' => isset($form_state['values']['dropdown_second']) ? $form_state['values']['dropdown_second'] : '',
+  );
+  
+  
+  
+  $form['dropdown_second1'] = array(
+    '#type' => 'select',
+    '#title' => $options_first[$selected] . ' ' . t('Instruments'),
+    '#prefix' => '<div id="dropdown-second-replace">',
+    '#suffix' => '</div>',
+    '#options' => _ajax_example_get_second_dropdown_options($selected),
+    '#default_value' => isset($form_state['values']['dropdown_second1']) ? $form_state['values']['dropdown_second1'] : '',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  return $form;
+ 
+}
+function ajax_example_dependent_dropdown_callback($form, $form_state) {
+  return $form['dropdown_second1'];
+  
+}
+
+function _ajax_example_get_second_dropdown_options($key = '') {
+  $options = array(
+    t('String') => drupal_map_assoc(array(
+      t('Violin'),
+      t('Viola'),
+      t('Cello'),
+      t('Double Bass'),
+    )),
+    t('Woodwind') => drupal_map_assoc(array(
+      t('Flute'),
+      t('Clarinet'),
+      t('Oboe'),
+      t('Bassoon'),
+    )),
+    t('Brass') => drupal_map_assoc(array(
+      t('Trumpet'),
+      t('Trombone'),
+      t('French Horn'),
+      t('Euphonium'),
+    )),
+    t('Percussion') => drupal_map_assoc(array(
+      t('Bass Drum'),
+      t('Timpani'),
+      t('Snare Drum'),
+      t('Tambourine'),
+    )),
+  );
+  if (isset($options[$key])) {
+    return $options[$key];
+  }
+  else {
+    return array();
+  }
+}
